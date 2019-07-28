@@ -21,6 +21,15 @@
 			</div>
 			<button type="submit" class="btn btn-primary">Sign Up</button>
 			{{ csrf_field()}}
+
+			<div class="form-group">
+				<div class="col-md-12">
+					<a href="{{ url('/auth/facebook') }}" class="btn btn-facebook">
+						<i class="fa fa-facebook"></i>
+						Sign up with Facebook
+					</a>
+				</div>
+			</div>
 		</form>
 	</div>
 </div>

@@ -7,6 +7,7 @@ use Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use Socialite;
 
 class AuthController extends Controller
 {
@@ -69,4 +70,51 @@ class AuthController extends Controller
             'password' => bcrypt($data['password']),
         ]);
     }
+
+    /**
+     * Redirect the user to the Facebook authentication page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function redirectToProvider($provider)
+    {
+        return Socialite::driver($provider)->redirect();
+    }
+
+    /**
+     * Obtain the user information from Facebook.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function handleProviderCallback($provider)
+    {
+        try{
+            $user = Socialite::driver($provider)->user();
+        } catch (Exception $e){
+            return redirect('/user/signin');
+        }
+
+        $authUser = $this->findOrCreateUser($user, $provider);
+
+        Auth::login($authUser,true);
+        
+        return redirect('/home');
+        // $user->token;
+    }
+
+    function findOrCreateUser($user,$provider)
+    {
+        $user = User::where('provider_id', $user->id)->first();
+        //add user
+        if (!$user) {
+            $user = User::create([
+                'name' => $user->name,
+                'email' => $user->email,
+                'provider' => $provider,
+                'provider_id' => $user->id,
+            ]);
+        }
+        return $user;
+    }
+
 }

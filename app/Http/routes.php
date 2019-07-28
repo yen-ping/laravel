@@ -51,3 +51,6 @@ Route::group(['prefix' => 'user'], function(){
 		]);
 	});
 });
+
+Route::get('auth/{provider}', 'Auth\SocialiteController@redirectToProvider');
+Route::get('auth/{provider}/callback', 'Auth\SocialiteController@handleProviderCallbcak');
